@@ -1,3 +1,5 @@
+name: foundation
+
 services:
   caddy:
     build:
