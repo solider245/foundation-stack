@@ -1,0 +1,33 @@
+{
+    acme_dns cloudflare {env.CF_API_TOKEN}
+    email {env.ADMIN_EMAIL}
+}
+
+*.{env.DOMAIN} {
+    tls {
+        dns cloudflare {env.CF_API_TOKEN}
+    }
+
+    @health host health.{env.DOMAIN}
+    handle @health {
+        respond "OK {time.now}" 200
+    }
+
+    @s3 host s3.{env.DOMAIN}
+    handle @s3 {
+        header Access-Control-Allow-Origin "*"
+        header Access-Control-Allow-Methods "GET, PUT, POST, DELETE, HEAD, OPTIONS"
+        header Access-Control-Allow-Headers "*"
+        reverse_proxy seaweedfs:8333
+    }
+
+    handle {
+        header X-Forwarded-Host {host}
+        header X-Forwarded-Proto {scheme}
+        reverse_proxy {re.host.1}:80
+    }
+}
+
+{env.DOMAIN} {
+    redir https://health.{env.DOMAIN}
+}

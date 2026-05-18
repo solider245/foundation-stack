@@ -1,0 +1,17 @@
+name: app-APP_NAME
+services:
+  APP_NAME:
+    image: your-image:latest
+    restart: unless-stopped
+    networks:
+      - foundation
+    environment:
+      DATABASE_URL: postgres://${PG_USER}:${PG_PASSWORD}@postgres:5432/APP_NAME_DB
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
+      S3_ENDPOINT: http://seaweedfs:8333
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
+      S3_SECRET_KEY: ${S3_SECRET_KEY}
+      S3_BUCKET: APP_NAME
+networks:
+  foundation:
+    external: true
